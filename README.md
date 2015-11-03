@@ -1,12 +1,12 @@
 ## dockerfiles
 
-### Install brew, brew-cask, docker, compose, machine
+### Install brew, brew-cask, docker, compose, machine...
 ```Shell
 $ make setup
 ```
 
-### Create a docker host, activate it...
+### Create a boot2docker/virtualbox docker host, activate it...
 ```Shell
 $ make create default
-$ . ./init.sh
+$ source ./init.sh
 ```

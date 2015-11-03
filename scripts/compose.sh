@@ -10,7 +10,7 @@ function compose_build() {
     local service=${1}
     __attn "Building the '${DOCKER_ENV_ACTIVE_PROJECT}, ${service}' service..."
     ( cd ${DOCKER_ENV_ACTIVE_PROJECT_PATH}; \
-        docker-compose build --pull ${service} )
+        docker-compose build ${service} )
 }
 
 function compose_run() { 

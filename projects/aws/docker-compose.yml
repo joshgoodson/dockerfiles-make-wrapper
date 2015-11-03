@@ -4,6 +4,7 @@ base:
     environment:
         AWS_CONFIG_FILE: /root/.aws/config
         AWS_DEFAULT_PROFILE: default
+        AWS_REGION: us-west-2
         DEBUG: 'True'
     volumes:
         - ./_config/aws.config:/root/.aws/config
@@ -29,3 +30,11 @@ cli:
     container_name: aws_cli
     extends:
         service: base
+
+kinesis:
+    build: ./kinesis
+    container_name: aws_kinesis
+    extends:
+        service: base
+    volumes:
+        - ./kinesis/src/go-feeder/:/go/src/go-feeder/

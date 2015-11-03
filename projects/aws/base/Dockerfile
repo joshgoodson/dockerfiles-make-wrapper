@@ -33,6 +33,10 @@ ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 COPY go-wrapper /usr/local/bin/
+RUN chmod +x /usr/local/bin/go-wrapper
+
+# install go sdk
+RUN go get -u github.com/aws/aws-sdk-go/...
 
 # term defaults
 ENV TERM xterm
