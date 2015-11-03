@@ -1,26 +1,31 @@
-image:
-    build: ./image
-
-config:
-    image: aws_image
-    container_name: aws_config
+base:
+    build: ./base
+    container_name: aws_base
     environment:
-        AWS_DEFAULT_PROFILE: default
         AWS_CONFIG_FILE: /root/.aws/config
+        AWS_DEFAULT_PROFILE: default
         DEBUG: 'True'
     volumes:
-        - _config/aws.config:/tmp/.aws/config
-        - _config/aws.credentials:/tmp/.aws/credentials   
+        - ./_config/aws.config:/root/.aws/config
+        - ./_config/aws.credentials:/root/.aws/credentials
+
+config:
+    image: aws_base
+    container_name: aws_config
+    extends:
+        service: base
     command: configure
 
-term:
-    image: aws_image
-    container_name: aws_term
+bash:
+    image: aws_base
+    container_name: aws_base
     extends:
-        service: config
-    environment:
-        AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-        AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-        AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
-    entrypoint: /bin/bash
-    command: -c "aws --version"
+        service: base
+    entrypoint: ''
+    command: bash
+
+cli:
+    image: aws_base
+    container_name: aws_cli
+    extends:
+        service: base
