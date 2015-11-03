@@ -17,7 +17,7 @@ function compose_run() {
     local service=${1}
     __attn "Running command using the '${DOCKER_ENV_ACTIVE_PROJECT}, ${service}' service..."
     ( cd ${DOCKER_ENV_ACTIVE_PROJECT_PATH}; \
-        docker-compose run --rm ${service} ${@:2} )
+        docker-compose run --rm --service-ports ${service} ${@:2} )
 }
 
 function compose_up() { 

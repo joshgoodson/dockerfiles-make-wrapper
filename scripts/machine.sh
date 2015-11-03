@@ -10,7 +10,9 @@ function machine_create_default() {
     docker-machine create \
         --driver=virtualbox \
         ${DOCKER_MACHINE_DEFAULT_NAME}
-    __info "Machine ip address: `docker-machine ip ${DOCKER_MACHINE_DEFAULT_NAME}`"
+    machine_forward_ports 8080 8080
+    machine_forward_ports 49000 49900
+    machine_nfs_mount
 }
 
 function machine_current_env() {
@@ -40,6 +42,33 @@ function machine_current_env() {
     __value "docker" "`docker version --format='{{ .Client.Version  }}'`"
     __value "docker-compose" "`docker-compose version --short`"
     __value "docker-machine" "`docker-machine --version | grep -oh '\d*\.\d*\.\d*.*'`"
+}
+
+function machine_forward_ports() {
+    if [ -n "${1}" ] && [ -n "${2}" ]; then
+        __attn "Forwarding ports $1 thru $2"
+        for port in $(seq ${1} ${2}); do
+            __msg "Attempting to remove port forwarding for port ${port}..."
+            VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
+                natpf1 delete "tcp-port${port}" &>/dev/null
+            VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
+                natpf1 delete "udp-port${port}" &>/dev/null
+            __msg "Attempting to forward port ${port}..."
+            VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
+                natpf1 "tcp-port${port},tcp,,${port},,${port}" &>/dev/null
+            VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
+                natpf1 "udp-port${port},udp,,${port},,${port}" &>/dev/null
+        done
+        __info "Port forwarding completed. Restarting machine..."
+        docker-machine restart ${DOCKER_MACHINE_NAME}
+        machine_ip
+    else
+        __err "You must provide and starting and ending port number!"
+    fi
+}
+
+function machine_ip() {
+    __value "IP" `docker-machine ip ${DOCKER_MACHINE_NAME}`
 }
 
 function machine_ssh() {

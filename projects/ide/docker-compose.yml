@@ -1,0 +1,12 @@
+che:
+    build: ./che
+    environment:
+        SERVER_PORT: 8080
+    volumes:
+        - ./che/che.properties:/home/user/.che/che.properties
+        - ./che/che.vfs:/home/user/.che/vfs
+        - ./_config/che-projects:/home/user/che-projects
+    privileged: true
+    ports:
+        - "0.0.0.0:8080:8080"
+        - "0.0.0.0:49152-49162:49152-49162"

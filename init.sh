@@ -91,6 +91,9 @@ function make_action() {
                 __head "> make env -- displays current environment values"
                 __head "> make create default -- creates a docker host using boot2docker/virtualbox"
                 __head "> make nfs -- adds nfs mount point"
+                __head "> make ip -- displays the current machine ip"
+                __head "> make ssh -- ssh into the current machine"
+                __head "> make forward [port] [port] -- forwards a range of ports"
                 __head "> make ps -- displays active containers"
                 __head "> make ls -- displays all tagged images"
                 __head "> make clean -- removes containers and dangling images"
@@ -117,6 +120,18 @@ function make_action() {
                     ;;
                 esac
                 make_update_env
+                ;;
+
+            ip)
+                machine_ip
+                ;;
+
+            ssh)
+                machine_ssh
+                ;;
+
+            forward)
+                machine_forward_ports ${2} ${3}
                 ;;
 
             nfs)
