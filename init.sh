@@ -12,10 +12,10 @@ export DOCKER_ENV_ROOT_PARENT="$(dirname ${DOCKER_ENV_ROOT})"
 export DOCKER_ENV_PROJECTS_PATH="${DOCKER_ENV_ROOT}/projects"
 export DOCKER_ENV_ACTIVE_PROJECT=""
 export DOCKER_ENV_ACTIVE_PROJECT_PATH=""
-export DOCKER_VERSION=1.8.3
-export BOOT2DOCKER_ISO_VERSION=1.8.3
-export DOCKER_COMPOSE_VERSION=1.5.0rc3
-export DOCKER_MACHINE_VERSION=0.5.0-rc4
+export DOCKER_VERSION=1.9.0
+export BOOT2DOCKER_ISO_VERSION=1.9.0
+export DOCKER_COMPOSE_VERSION=1.5.0
+export DOCKER_MACHINE_VERSION=0.5.0
 export DOCKER_MACHINE_DEFAULT_NAME=boot2docker
 export INSTALL_LOG="${DOCKER_ENV_ROOT}/.install_log"
 
@@ -87,13 +87,13 @@ function make_action() {
             help)
                 clear
                 __attn "github.com/brianclaridge/dockerfiles"
-                __head "> make setup -- installs brew, brew-cask, docker, docker-compose and docker-machine"
-                __head "> make env -- displays current environment values"
+                __head "> make setup osx -- installs brew, brew-cask, docker, docker-compose and docker-machine"
                 __head "> make create default -- creates a docker host using boot2docker/virtualbox"
-                __head "> make nfs -- adds nfs mount point"
                 __head "> make ip -- displays the current machine ip"
                 __head "> make ssh -- ssh into the current machine"
                 __head "> make forward [port] [port] -- forwards a range of ports"
+                __head "> make env -- displays current environment values"
+                __head "> make nfs -- adds nfs mount point"
                 __head "> make ps -- displays active containers"
                 __head "> make ls -- displays all tagged images"
                 __head "> make clean -- removes containers and dangling images"
@@ -106,7 +106,11 @@ function make_action() {
 
             # machine, setup stuff
             setup)
-                setup_everything
+                case "${2}" in
+                    osx|default)
+                        setup_osx
+                        ;;
+                esac
                 ;;
 
             info|env)
@@ -117,7 +121,7 @@ function make_action() {
                 case "${2}" in
                     default)
                         machine_create_default
-                    ;;
+                        ;;
                 esac
                 make_update_env
                 ;;
@@ -139,6 +143,10 @@ function make_action() {
                 ;;
 
             # docker stuff
+            docker)
+                docker_wrapper "${@:2}"
+                ;;
+
             ps)
                 docker_ps
                 ;;
@@ -163,6 +171,10 @@ function make_action() {
             project)
                 compose_set_project "${2}"
                 make_update_env
+                ;;
+
+            compose)
+                compose_wrapper "${@:2}"
                 ;;
 
             build)

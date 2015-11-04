@@ -1,5 +1,9 @@
 #!/usr/bin/env docker
 
+function docker_wrapper() {
+    docker ${@}
+}
+
 function docker_image_id() {
     local imgid=`docker inspect --format "{{ .Id }}" ${1} 2>/dev/null`
     echo -n "${imgid}"

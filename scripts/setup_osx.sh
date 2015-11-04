@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function setup_everything() {
+function setup_osx() {
     setup_brew
     setup_brew_cask
     setup_docker

@@ -9,10 +9,19 @@ function machine_create_default() {
     fi
     docker-machine create \
         --driver=virtualbox \
+        --engine-opt dns=8.8.8.8 \
+        --engine-opt log-driver=syslog \
+        --virtualbox-memory "6144" \
+        --virtualbox-cpu-count "8" \
+        --virtualbox-boot2docker-url="https://github.com/boot2docker/boot2docker/releases/download/v${BOOT2DOCKER_ISO_VERSION}/boot2docker.iso" \
         ${DOCKER_MACHINE_DEFAULT_NAME}
     machine_forward_ports 8080 8080
     machine_forward_ports 49000 49900
+    __info "Restarting machine..."
+    docker-machine restart ${DOCKER_MACHINE_NAME}
+    machine_ip
     machine_nfs_mount
+    machine_ssh "syslogd && echo '' > /var/log/messages"
 }
 
 function machine_current_env() {
@@ -37,7 +46,7 @@ function machine_current_env() {
     else
         __err "A machine has not been created or made active yet..."
     fi
-        __msg ""
+    __msg ""
     __attn "Versions:"
     __value "docker" "`docker version --format='{{ .Client.Version  }}'`"
     __value "docker-compose" "`docker-compose version --short`"
@@ -48,20 +57,18 @@ function machine_forward_ports() {
     if [ -n "${1}" ] && [ -n "${2}" ]; then
         __attn "Forwarding ports $1 thru $2"
         for port in $(seq ${1} ${2}); do
-            __msg "Attempting to remove port forwarding for port ${port}..."
+            echo -n "${port} "
             VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
                 natpf1 delete "tcp-port${port}" &>/dev/null
             VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
                 natpf1 delete "udp-port${port}" &>/dev/null
-            __msg "Attempting to forward port ${port}..."
             VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
                 natpf1 "tcp-port${port},tcp,,${port},,${port}" &>/dev/null
             VBoxManage controlvm ${DOCKER_MACHINE_NAME} \
                 natpf1 "udp-port${port},udp,,${port},,${port}" &>/dev/null
         done
-        __info "Port forwarding completed. Restarting machine..."
-        docker-machine restart ${DOCKER_MACHINE_NAME}
-        machine_ip
+        echo "" 
+        __info "Port forwarding completed."
     else
         __err "You must provide and starting and ending port number!"
     fi

@@ -6,6 +6,11 @@ function compose_set_project() {
     __attn "'${DOCKER_ENV_ACTIVE_PROJECT}' is now the active compose project..."
 }
 
+function compose_wrapper() {
+    ( cd ${DOCKER_ENV_ACTIVE_PROJECT_PATH}; \
+        docker-compose ${@} )
+}
+
 function compose_build() {
     local service=${1}
     __attn "Building the '${DOCKER_ENV_ACTIVE_PROJECT}, ${service}' service..."
