@@ -38,6 +38,7 @@ kinesis:
     working_dir: /go/src/aws-kinesis
     volumes:
         - ./kinesis/src/aws-kinesis/:/go/src/aws-kinesis/
+        - ./_workspace/data.tmpl:/tmp/data.tmpl
 
 kinesis-bash:
     build: ./kinesis
@@ -51,3 +52,4 @@ kinesis-bash:
     command: bash
     volumes:
         - ./kinesis/src/aws-kinesis/:/go/src/aws-kinesis/
+        - ./_workspace/data.tmpl:/tmp/data.tmpl
