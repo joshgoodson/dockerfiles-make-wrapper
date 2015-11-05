@@ -34,6 +34,16 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
+			Name:    "describe-stream",
+			Aliases: []string{"describe"},
+			Usage:   "describes the given stream",
+			Action: func(c *cli.Context) {
+				if err := DescribeStreamAction(c, sess); err != nil {
+					fmt.Println(err.Error())
+				}
+			},
+		},
+		{
 			Name:    "feed-data",
 			Aliases: []string{"feed"},
 			Usage:   "feeds a stream with data",
@@ -96,6 +106,27 @@ func ListStreamsAction(c *cli.Context, sess *session.Session) error {
 	}
 
 	fmt.Println(resp)
+
+	return nil
+}
+
+func DescribeStreamAction(c *cli.Context, sess *session.Session) error {
+	svc := kinesis.New(sess)
+
+	stream := aws.String(c.Args()[0])
+
+	params := &kinesis.DescribeStreamInput{
+		StreamName: stream,
+	}
+
+	resp, err := svc.DescribeStream(params)
+
+	if err != nil {
+		return err
+	}
+
+	// Pretty-print the response data.
+	fmt.Println(resp.StreamDescription)
 
 	return nil
 }
