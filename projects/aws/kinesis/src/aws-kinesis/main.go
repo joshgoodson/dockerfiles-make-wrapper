@@ -13,6 +13,7 @@ func main() {
 	app.Email = "brian@claridge.net"
 	app.Usage = "A cli app that plays with kinesis"
 	app.ArgsUsage = ""
+	app.Version = "0.1.0"
 	app.Flags = []cli.Flag{
 		RegionFlag(),
 	}
@@ -22,7 +23,7 @@ func main() {
 		ShowConfigCommand(),
 		ListStreamsCommand(),
 	}
-	app.Action = ShowConfigAction()
+	app.Action = DefaultAction()
 	app.Before = BeforeAction()
 	app.Run(os.Args)
 }
