@@ -55,13 +55,13 @@ func DescribeStream(stream string) (*kinesis.DescribeStreamOutput, error) {
 	return resp, nil
 }
 
-func PutRandomRecords(stream string, numRecords int) (*kinesis.PutRecordsOutput, error) {
+func PutRandomRecords(stream string, numRecords int, tmplPath string) (*kinesis.PutRecordsOutput, error) {
 	svc := kinesis.New(sess)
 	records := []*kinesis.PutRecordsRequestEntry{}
 
 	for i := 0; i < numRecords; i++ {
 		data := NewRandomData(i)
-		dataBytes := data.ToBytesFromTemplate("data.tmpl")
+		dataBytes := data.ToBytesFromTemplate(tmplPath)
 		key := fmt.Sprintf("part-key-%v", i)
 		records = append(records, &kinesis.PutRecordsRequestEntry{
 			Data:         dataBytes,

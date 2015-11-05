@@ -39,8 +39,12 @@ func FeedStreamAction() func(c *cli.Context) {
 	return func(c *cli.Context) {
 		stream := c.Args()[0]
 		numRecords, _ := strconv.Atoi(c.Args()[1])
+		tmplPath := "data.tmpl"
+		if len(c.Args()) > 2 {
+			tmplPath = c.Args()[2]
+		}
 
-		out, err := PutRandomRecords(stream, numRecords)
+		out, err := PutRandomRecords(stream, numRecords, tmplPath)
 		if err != nil {
 			panic(err)
 		}
