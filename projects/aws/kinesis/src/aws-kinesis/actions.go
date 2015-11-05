@@ -48,6 +48,10 @@ func FeedStreamAction() func(c *cli.Context) {
 		if DebugMode(c) {
 			fmt.Println(out)
 		}
+
+		for _, v := range out.Records {
+			fmt.Printf("%v:%v\n", *v.ShardId, *v.SequenceNumber)
+		}
 	}
 }
 
