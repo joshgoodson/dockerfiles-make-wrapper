@@ -5,7 +5,6 @@ base:
         AWS_CONFIG_FILE: /root/.aws/config
         AWS_DEFAULT_PROFILE: default
         AWS_REGION: us-west-2
-        DEBUG: 'True'
     volumes:
         - ./_workspace/aws.config:/root/.aws/config
         - ./_workspace/aws.credentials:/root/.aws/credentials
@@ -43,6 +42,8 @@ kinesis:
 kinesis-bash:
     build: ./kinesis
     container_name: aws_kinesis
+    environment:
+        DEBUG: 1
     extends:
         service: base
     working_dir: /go/src/aws-kinesis

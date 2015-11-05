@@ -16,6 +16,7 @@ func main() {
 	app.Version = "0.1.0"
 	app.Flags = []cli.Flag{
 		RegionFlag(),
+		DebugFlag(),
 	}
 	app.Commands = []cli.Command{
 		DescribeStreamCommand(),

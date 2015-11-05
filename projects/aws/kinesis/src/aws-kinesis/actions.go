@@ -9,6 +9,9 @@ import (
 
 func BeforeAction() func(c *cli.Context) error {
 	return func(c *cli.Context) error {
+		if DebugMode(c) {
+			fmt.Println("DEBUG MODE ON")
+		}
 		return nil
 	}
 }
@@ -42,7 +45,9 @@ func FeedStreamAction() func(c *cli.Context) {
 			panic(err)
 		}
 
-		fmt.Println(out)
+		if DebugMode(c) {
+			fmt.Println(out)
+		}
 	}
 }
 
