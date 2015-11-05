@@ -10,7 +10,6 @@ function machine_create_default() {
     docker-machine create \
         --driver=virtualbox \
         --engine-opt dns=8.8.8.8 \
-        --engine-opt log-driver=syslog \
         --virtualbox-memory "6144" \
         --virtualbox-cpu-count "8" \
         --virtualbox-boot2docker-url="https://github.com/boot2docker/boot2docker/releases/download/v${BOOT2DOCKER_ISO_VERSION}/boot2docker.iso" \
@@ -21,7 +20,6 @@ function machine_create_default() {
     docker-machine restart ${DOCKER_MACHINE_NAME}
     machine_ip
     machine_nfs_mount
-    machine_ssh "syslogd && echo '' > /var/log/messages"
 }
 
 function machine_current_env() {

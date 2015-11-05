@@ -36,5 +36,6 @@ kinesis:
     container_name: aws_kinesis
     extends:
         service: base
+    working_dir: /go/src/aws-kinesis
     volumes:
-        - ./kinesis/src/go-feeder/:/go/src/go-feeder/
+        - ./kinesis/src/aws-kinesis/:/go/src/aws-kinesis/
