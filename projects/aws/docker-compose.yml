@@ -39,3 +39,14 @@ kinesis:
     working_dir: /go/src/aws-kinesis
     volumes:
         - ./kinesis/src/aws-kinesis/:/go/src/aws-kinesis/
+
+kinesis-bash:
+    build: ./kinesis
+    container_name: aws_kinesis
+    extends:
+        service: base
+    working_dir: /go/src/aws-kinesis
+    entrypoint: ''
+    command: bash
+    volumes:
+        - ./kinesis/src/aws-kinesis/:/go/src/aws-kinesis/
