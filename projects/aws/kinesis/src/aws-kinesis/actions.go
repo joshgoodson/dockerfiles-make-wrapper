@@ -49,6 +49,9 @@ func FeedStreamAction() func(c *cli.Context) {
 		if fRecords := c.Int("records"); fRecords > numRecords && fRecords > 0 {
 			numRecords = fRecords
 		}
+		if numRecords > 500 {
+			numRecords = 500
+		}
 
 		// determine sleep time
 		sleep := 1000
@@ -56,7 +59,7 @@ func FeedStreamAction() func(c *cli.Context) {
 			aSleep, _ := strconv.Atoi(c.Args()[2])
 			sleep = aSleep
 		}
-		if fSleep := c.Int("sleep"); fSleep >= 1000 {
+		if fSleep := c.Int("sleep"); fSleep > sleep && fSleep >= 1000 {
 			sleep = fSleep
 		}
 
