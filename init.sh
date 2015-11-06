@@ -142,6 +142,11 @@ function make_action() {
                 machine_nfs_mount
                 ;;
 
+            fix)
+                machine_fix
+                make_update_env
+                ;;
+
             # docker stuff
             docker)
                 docker_wrapper "${@:2}"

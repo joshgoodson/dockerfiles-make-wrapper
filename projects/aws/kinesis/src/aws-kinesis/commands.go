@@ -19,6 +19,10 @@ func FeedStreamCommand() cli.Command {
 		Aliases: []string{"feed"},
 		Usage:   "feeds a stream with data",
 		Action:  FeedStreamAction(),
+		Flags: []cli.Flag{
+			RecordsFlag(),
+			SleepFlag(),
+		},
 	}
 }
 

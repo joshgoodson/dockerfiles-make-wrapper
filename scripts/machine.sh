@@ -16,6 +16,10 @@ function machine_create_default() {
         ${DOCKER_MACHINE_DEFAULT_NAME}
     machine_forward_ports 8080 8080
     machine_forward_ports 49000 49900
+    machine_fix
+}
+
+function machine_fix() {
     __info "Restarting machine..."
     docker-machine restart ${DOCKER_MACHINE_NAME}
     machine_ip

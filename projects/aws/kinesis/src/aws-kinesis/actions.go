@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/codegangsta/cli"
 )
@@ -38,23 +39,48 @@ func DescribeStreamAction() func(c *cli.Context) {
 func FeedStreamAction() func(c *cli.Context) {
 	return func(c *cli.Context) {
 		stream := c.Args()[0]
-		numRecords, _ := strconv.Atoi(c.Args()[1])
-		tmplPath := "data.tmpl"
+
+		// determine batch size
+		numRecords := 1
+		if len(c.Args()) > 1 {
+			aRecords, _ := strconv.Atoi(c.Args()[1])
+			numRecords = aRecords
+		}
+		if fRecords := c.Int("records"); fRecords > numRecords && fRecords > 0 {
+			numRecords = fRecords
+		}
+
+		// determine sleep time
+		sleep := 1000
 		if len(c.Args()) > 2 {
-			tmplPath = c.Args()[2]
+			aSleep, _ := strconv.Atoi(c.Args()[2])
+			sleep = aSleep
+		}
+		if fSleep := c.Int("sleep"); fSleep >= 1000 {
+			sleep = fSleep
 		}
 
-		out, err := PutRandomRecords(stream, numRecords, tmplPath)
-		if err != nil {
-			panic(err)
+		// determine template path
+		tmplPath := "data.tmpl"
+		if len(c.Args()) > 3 {
+			tmplPath = c.Args()[3]
 		}
 
-		if DebugMode(c) {
-			fmt.Println(out)
-		}
+		for {
+			out, err := PutRandomRecords(stream, numRecords, tmplPath)
+			if err != nil {
+				panic(err)
+			}
 
-		for _, v := range out.Records {
-			fmt.Printf("%v:%v\n", *v.ShardId, *v.SequenceNumber)
+			if DebugMode(c) {
+				fmt.Println(out)
+			}
+
+			for _, v := range out.Records {
+				fmt.Printf("%v:%v\n", *v.ShardId, *v.SequenceNumber)
+			}
+
+			time.Sleep(time.Duration(sleep) * time.Millisecond)
 		}
 	}
 }
