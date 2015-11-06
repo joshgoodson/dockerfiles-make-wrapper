@@ -83,6 +83,7 @@ func FeedStreamAction() func(c *cli.Context) {
 				fmt.Printf("%v:%v\n", *v.ShardId, *v.SequenceNumber)
 			}
 
+			fmt.Printf("FailedRecordCount:%v\n", *out.FailedRecordCount)
 			time.Sleep(time.Duration(sleep) * time.Millisecond)
 		}
 	}
