@@ -37,6 +37,9 @@ RUN chmod +x /usr/local/bin/go-wrapper
 
 # install go sdk
 RUN go get -u github.com/aws/aws-sdk-go/...
+RUN mkdir -p /root/.aws/
+RUN touch /root/.aws/config
+RUN touch /root/.aws/credentials
 
 # term defaults
 ENV TERM xterm

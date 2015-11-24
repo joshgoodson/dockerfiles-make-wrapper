@@ -3,11 +3,8 @@ base:
     container_name: aws_base
     environment:
         AWS_CONFIG_FILE: /root/.aws/config
-        AWS_DEFAULT_PROFILE: default
-        AWS_REGION: us-west-2
     volumes:
-        - ./_workspace/aws.config:/root/.aws/config
-        - ./_workspace/aws.credentials:/root/.aws/credentials
+        - ./_workspace/aws-config/:/root/.aws/
 
 config:
     image: aws_base
@@ -29,12 +26,18 @@ cli:
     container_name: aws_cli
     extends:
         service: base
+    environment:
+        AWS_DEFAULT_PROFILE: default
+        AWS_REGION: us-west-2
 
 kinesis:
     build: ./kinesis
     container_name: aws_kinesis
     extends:
         service: base
+    environment:
+        AWS_DEFAULT_PROFILE: default
+        AWS_REGION: us-west-2
     working_dir: /go/src/aws-kinesis
     volumes:
         - ./kinesis/src/aws-kinesis/:/go/src/aws-kinesis/
@@ -43,10 +46,12 @@ kinesis:
 kinesis-bash:
     build: ./kinesis
     container_name: aws_kinesis
-    environment:
-        DEBUG: 1
     extends:
         service: base
+    environment:
+        AWS_DEFAULT_PROFILE: default
+        AWS_REGION: us-west-2
+        DEBUG: 1
     working_dir: /go/src/aws-kinesis
     entrypoint: ''
     command: bash
