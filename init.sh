@@ -77,6 +77,26 @@ ENVFILE
     __info ".env file updated..."
 }
 
+function make_help() {
+    clear
+    __attn "github.com/brianclaridge/dockerfiles"
+    __head "> make setup osx -- installs brew, brew-cask, docker, docker-compose and docker-machine"
+    __head "> make create default -- creates a docker host using boot2docker/virtualbox"
+    __head "> make ip -- displays the current machine ip"
+    __head "> make ssh -- ssh into the current machine"
+    __head "> make forward [port] [port] -- forwards a range of ports"
+    __head "> make env -- displays current environment values"
+    __head "> make nfs -- adds nfs mount point"
+    __head "> make ps -- displays active containers"
+    __head "> make ls -- displays all tagged images"
+    __head "> make clean -- removes containers and dangling images"
+    __head "> make nuke -- forcefully removes ALL containers and images"
+    __head "> make project [name] -- sets the active compose project"
+    __head "> make build [service] -- builds a service"
+    __head "> make run [service] [command] [args] -- run a single command"
+    __head "> make up [service] -- start and attach to a service"
+}
+
 function make_action() {
     local machine_state=`docker-machine status ${DOCKER_MACHINE_DEFAULT_NAME} 2>/dev/null`
     if [ -z "${machine_state}" ]; then
@@ -84,26 +104,6 @@ function make_action() {
         make_update_env
     else
         case "$1" in
-            help)
-                clear
-                __attn "github.com/brianclaridge/dockerfiles"
-                __head "> make setup osx -- installs brew, brew-cask, docker, docker-compose and docker-machine"
-                __head "> make create default -- creates a docker host using boot2docker/virtualbox"
-                __head "> make ip -- displays the current machine ip"
-                __head "> make ssh -- ssh into the current machine"
-                __head "> make forward [port] [port] -- forwards a range of ports"
-                __head "> make env -- displays current environment values"
-                __head "> make nfs -- adds nfs mount point"
-                __head "> make ps -- displays active containers"
-                __head "> make ls -- displays all tagged images"
-                __head "> make clean -- removes containers and dangling images"
-                __head "> make nuke -- forcefully removes ALL containers and images"
-                __head "> make project [name] -- sets the active compose project"
-                __head "> make build [service] -- builds a service"
-                __head "> make run [service] [command] [args] -- run a single command"
-                __head "> make up [service] -- start and attach to a service"
-                ;;
-
             # machine, setup stuff
             setup)
                 case "${2}" in
@@ -194,8 +194,8 @@ function make_action() {
                 compose_up "${@:2}"
                 ;;
 
-            *)
-                clear
+            help|*)
+                make_help
         esac
     fi
 }

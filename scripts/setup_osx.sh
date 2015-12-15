@@ -3,6 +3,7 @@
 function setup_osx() {
     setup_brew
     setup_brew_cask
+    setup_virtualbox
     setup_docker
     setup_docker_compose
     setup_docker_machine
@@ -46,7 +47,7 @@ function setup_is_app_installed() {
 }
 
 function setup_is_brew_cask_installed() {
-    if [ -n "`brew-cask list $1 2>/dev/null | grep $1`" ]; then
+    if [ -n "`brew cask list $1 2>/dev/null | grep $1`" ]; then
         return 0
     fi
     return 1
@@ -62,8 +63,8 @@ function setup_brew_install() {
 }
 
 function setup_cask_install() {
-    __attn "brew-cask installing $1..."
-    brew-cask install $1 --force >> ${INSTALL_LOG} 2>&1
+    __attn "brew cask installing $1..."
+    brew cask install $1 --force >> ${INSTALL_LOG} 2>&1
 }
 
 function setup_brew_uninstall() {
@@ -74,7 +75,7 @@ function setup_brew_uninstall() {
 
 function setup_cask_uninstall() {
     __info "brew cask uninstalling $1..."
-    brew-cask uninstall --force $1 >> ${INSTALL_LOG} 2>&1
+    brew cask uninstall --force $1 >> ${INSTALL_LOG} 2>&1
 }
 
 function setup_docker() {
@@ -109,4 +110,39 @@ function setup_docker_machine() {
     chmod +x /usr/local/bin/docker-machine
     ln -sf /usr/local/bin/docker-machine /usr/local/bin/dm
     __info "docker-machine setup completed..."
+}
+
+function setup_docker_machine() {
+    __attn "installing docker-machine ${DOCKER_MACHINE_VERSION}..."
+    curl -L https://github.com/docker/machine/releases/download/v${DOCKER_MACHINE_VERSION}/docker-machine_darwin-amd64.zip \
+        > /tmp/machine.zip && \
+        unzip /tmp/machine.zip -d /tmp &>/dev/null && \
+        rm /tmp/machine.zip && \
+        mv /tmp/docker-machine* /usr/local/bin
+    chmod +x /usr/local/bin/docker-machine
+    ln -sf /usr/local/bin/docker-machine /usr/local/bin/dm
+    __info "docker-machine setup completed..."
+}
+
+function setup_virtualbox() {
+    __attn "installing VirtualBox..."
+    if [ ! -z `which vboxmanage` ]; then
+        local vms=`setup_virtualbox_list` 
+        if [[ -n "$vms" ]]; then
+            while read -r line; do
+                __err "Powering off VM: ${line}"
+                vboxmanage controlvm $line acpipowerbutton >> ${INSTALL_LOG} 2>&1
+            done <<< "$vms"
+        fi
+        local pid=`pgrep -o -x VirtualBox`
+        if [ -n "${pid}" ]; then
+            kill ${pid} >> ${INSTALL_LOG} 2>&1
+        fi
+    fi
+    setup_cask_install virtualbox
+}
+
+function setup_virtualbox_list() {
+    local vms=`vboxmanage list runningvms | sed -En "s/.*\{(.*)\}.*/\1/p"` 
+    echo "${vms}"
 }
