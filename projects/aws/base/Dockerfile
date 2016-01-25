@@ -12,6 +12,7 @@ RUN apt-get update \
         && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # install aws cli and python sdk
+RUN pip install --upgrade pip
 RUN pip install awscli
 RUN pip install boto
 
