@@ -40,13 +40,9 @@ services:
             - sshd
         entrypoint: ssh
         command: -Aq -i /root/.ssh/insecure_key -o "StrictHostKeyChecking no" root@sshd -p 22
-    aws:
+    aws-common:
         extends:
             service: base
-        image: docker.local/aws:latest
-        build: 
-            context: ./recipes/aws
-            dockerfile: Dockerfile
         volumes:
             - .data/aws:/root/.aws
             - ./recipes/aws/entrypoint.sh:/entrypoint.sh
@@ -56,10 +52,19 @@ services:
             AWS_REGION: us-west-2
             DEBUG: 1
         entrypoint: /entrypoint.sh
+    aws:
+        extends:
+            service: aws-common
+        image: docker.local/aws:latest
+        build: 
+            context: ./recipes/aws
+            dockerfile: Dockerfile
+        depends_on:
+            - base
         command: config
     kinesis:
         extends:
-            service: aws
+            service: aws-common
         image: docker.local/kinesis:latest
         build:
             context: ./recipes/kinesis
