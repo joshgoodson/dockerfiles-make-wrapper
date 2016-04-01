@@ -1,14 +1,25 @@
 ## dockerfiles
 
-### Install brew, brew-cask, docker, compose, machine...
+### sshd ~ sample sshd daemon in a container
+```make up sshd```
 
-```Shell
-make setup osx
+### ssh ~ ssh client - depends on sshd service
+```make run ssh```
+
+### aws ~ aws cli config
+```
+make run aws config
+AWS Access Key ID [****************722Q]:
+AWS Secret Access Key [****************AB3m]:
+Default region name [us-west-2]:
+Default output format [table]:
 ```
 
-### Create a boot2docker/virtualbox docker host, activate it...
+### aws ~ aws cli help
+```make run aws help```
 
-```Shell
-make create default
-source ./init.sh
-```
+### aws ~ aws - list kinesis streams
+```make run aws kinesis list-streams```
+
+### kinesis ~ put with one random message every 1 seconds
+```make run kinesis feed [stream] 1 1000```

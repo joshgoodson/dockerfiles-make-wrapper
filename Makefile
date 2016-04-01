@@ -1,3 +1,5 @@
+APP_DIRS=asset services
+
 #!/usr/bin/make -f
 SHELL = /bin/bash
 
@@ -5,15 +7,16 @@ SHELL = /bin/bash
 CMD = $(word 1, $(MAKECMDGOALS))
 
 # any optional arguments to a pass on to command
-ARGS = $(filter-out $(CMD), $(MAKECMDGOALS))
+ARGS = $(wordlist 2,100,$(MAKECMDGOALS))
 
 # turn args into 'do nothing' goals
 $(eval $(ARGS):;@:)
 
-.PHONY: all scripts projects
-all:
-	@make nil
+.PHONY: all $(APP_DIRS) $(ARGS)
+all: 
+	@make help
 
 %:
-	@chmod +x scripts/*
+	@chmod +x scripts/*.sh
+	@chmod +x init.sh
 	@exec /bin/bash -c 'source ./init.sh ${CMD} ${ARGS}'

@@ -1,51 +1,5 @@
 #!/usr/bin/env docker
 
-function docker_wrapper() {
-    docker ${@}
-}
-
-function docker_image_id() {
-    local imgid=`docker inspect --format "{{ .Id }}" ${1} 2>/dev/null`
-    echo -n "${imgid}"
-}
-
-function docker_container_id() {
-    local cid=`docker ps --no-trunc --quiet --filter="name=${1}" 2>/dev/null`
-    echo -n "${cid}"
-}
-
-function docker_any_container() {
-    local cid=`docker ps -a --no-trunc --quiet --filter="name=${1}" 2>/dev/null`
-    echo -n "${cid}"
-}
-
-function docker_container_ip() {
-    local cip=""
-    if [ -n "$1" ]; then
-        cip=`docker inspect --format="{{ .NetworkSettings.IPAddress }}" ${1}`
-    fi 
-    echo -n "${cip}"
-}
-
-function docker_container_status() {
-    local state=""
-    if [ -n "$1" ]; then
-        local running=`docker inspect --type=container --format="{{ .State.Running }}" ${1}`
-        local paused=`docker inspect --type=container --format="{{ .State.Paused }}" ${1}`
-        local restarting=`docker inspect --type=container --format="{{ .State.Restarting }}" ${1}`
-        if [[ "${paused}" == "true" ]]; then
-            state="${cyan}paused${reset}"
-        elif [[ "${restarting}" == "true" ]]; then
-            state="${cyan}restarting${reset}"
-        elif [[ "${running}" == "true" ]]; then
-            state="${green}running${reset}"
-        else
-            state="${red}not running${reset}"
-        fi
-    fi 
-    echo -n "${state}"
-}
-
 function docker_ps() {
     local containers=`docker ps --all=false -q 2> /dev/null`
     local line="%-35s %-35s %-16s %-16s %s\n"
@@ -53,6 +7,7 @@ function docker_ps() {
     if [[ -n "$containers" ]]; then
         while read -r id; do
             image=`docker inspect --format="{{ .Config.Image }}" ${id}`
+            network=`docker inspect --format="{{ .HostConfig.NetworkMode }}" ${id}`
             if [ ${#image} -gt 34 ]; then
                 image="${image:0:10}..."
             fi
@@ -60,7 +15,7 @@ function docker_ps() {
             if [ ${#name} -gt 34 ]; then
                 name="${name:0:30}..."
             fi
-            ip=`docker inspect --format="{{ .NetworkSettings.IPAddress }}" ${id}`
+            ip=`docker inspect --format="{{ .NetworkSettings.Networks.${network}.IPAddress }}" ${id}`
             printf "${cyan}${line}${reset}" \
                 "${image}" "${name}" "${id}" "${ip}"
         done <<< "$containers"
@@ -85,6 +40,7 @@ function docker_kill() {
     if [[ -n "$containers" ]]; then
         while read -r id; do
             __attn "Killing ${id}..."
+            docker stop ${id} &>/dev/null
             docker kill ${id} &>/dev/null
         done <<< "$containers"
     else
@@ -101,7 +57,7 @@ function docker_rm() {
             image=`docker inspect --format "{{ .Config.Image }}" ${id}`
             running=`docker inspect --format "{{ .State.Running }}" ${id}`
             if [ "$running" = false ]; then 
-                __attn "Removing container: ${id}, from image: '${image}'..."
+                __attn "Removing container: ${id}, using image: '${image}'..."
                 docker rm -f ${id} &>/dev/null
             else 
                 __err "Can't remove running container: ${id}"

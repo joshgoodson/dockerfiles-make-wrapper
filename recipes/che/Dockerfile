@@ -1,0 +1,1 @@
+FROM docker.local/base

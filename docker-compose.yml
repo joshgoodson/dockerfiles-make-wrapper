@@ -1,0 +1,74 @@
+version: '2'
+services:
+    base:
+        image: docker.local/base:latest
+        build: 
+            context: ./recipes/base
+            dockerfile: Dockerfile
+        environment:
+            SHELL: bash
+            TERM: xterm-256color
+            SSH_AUTH_SOCK: ${SSH_AUTH_SOCK}
+        volumes:
+            - ./recipes/base/bashrc.sh:/root/.bashrc
+            - ./recipes/base/insecure_key:/root/.ssh/insecure_key
+            - ./recipes/base/insecure_key.pub:/root/.ssh/insecure_key.pub
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
+    shell:
+        extends:
+            service: base
+        command: bash
+    sshd:
+        extends:
+            service: base
+        image: docker.local/sshd:latest
+        container_name: docker.local.sshd
+        build: 
+            context: ./recipes/sshd
+            dockerfile: Dockerfile
+        depends_on:
+            - base
+        command: ["/usr/sbin/sshd", "-D", "-d"]
+    ssh:
+        extends:
+            service: base
+        image: docker.local/ssh:latest
+        build: 
+            context: ./recipes/ssh
+            dockerfile: Dockerfile
+        depends_on:
+            - sshd
+        entrypoint: ssh
+        command: -Aq -i /root/.ssh/insecure_key -o "StrictHostKeyChecking no" root@sshd -p 22
+    aws:
+        extends:
+            service: base
+        image: docker.local/aws:latest
+        build: 
+            context: ./recipes/aws
+            dockerfile: Dockerfile
+        volumes:
+            - .data/aws:/root/.aws
+            - ./recipes/aws/entrypoint.sh:/entrypoint.sh
+        environment:
+            AWS_CONFIG_FILE: /root/.aws/config
+            AWS_DEFAULT_PROFILE: default
+            AWS_REGION: us-west-2
+            DEBUG: 1
+        entrypoint: /entrypoint.sh
+        command: config
+    kinesis:
+        extends:
+            service: aws
+        image: docker.local/kinesis:latest
+        build:
+            context: ./recipes/kinesis
+            dockerfile: Dockerfile
+        depends_on:
+            - aws
+        working_dir: /go/src/aws-kinesis
+        volumes:
+            - ./recipes/kinesis/src:/go/src/aws-kinesis
+        environment:
+            DEFAULT_COMMAND: aws-kinesis
+        command: help
