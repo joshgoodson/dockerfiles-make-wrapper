@@ -77,3 +77,32 @@ services:
         environment:
             DEFAULT_COMMAND: aws-kinesis
         command: help
+    rancher:
+        image: rancher/server
+        container_name: rancher
+        restart: always
+        ports:
+            - "8080:8080"
+    sysdig:
+        image: sysdig/sysdig
+        container_name: sysdig
+        volumes: 
+            - /var/run/docker.sock:/var/run/docker.sock  
+            - /dev:/host/dev 
+            - /proc:/host/proc:ro 
+            - /boot:/host/boot:ro 
+            - /lib/modules:/host/lib/modules:ro 
+            - /usr:/host/usr:ro 
+        privileged: true 
+        command: csysdig
+    cadvisor:
+        image: google/cadvisor:latest
+        container_name: cadvisor
+        volumes:
+            - /:/rootfs:ro 
+            - /var/run:/var/run:rw 
+            - /sys:/sys:ro 
+            - /var/lib/docker/:/var/lib/docker:ro
+        ports:
+            - "8081:8080"
+  
