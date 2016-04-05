@@ -1,4 +1,7 @@
-## dockerfiles
+# dockerfiles
+
+## OSX Requirements
+[Docker](https://beta.docker.com/docs/) >= 1.10.3, build 20f81dd
 
 ### sshd ~ sample sshd daemon in a container
 ```make up sshd```
@@ -23,3 +26,9 @@ Default output format [table]:
 
 ### kinesis ~ put with one random message every 1 seconds
 ```make run kinesis feed [stream] 1 1000```
+
+### eclipse che ~ local eclipse che server
+```
+make up che
+make open
+```
