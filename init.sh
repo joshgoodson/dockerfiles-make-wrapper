@@ -40,6 +40,7 @@ fi
 
 source scripts/docker.sh
 source scripts/compose.sh
+source scripts/ssh.sh
 
 function update_current_service() {
     echo "${1}" > .data/current_service
@@ -65,7 +66,7 @@ function make_target_handler() {
                 compose_up ${service}
                 ;;
             
-            bash)
+            bash|shell|term)
                 docker exec -it ${service} bash
                 ;;
                 
@@ -109,6 +110,17 @@ function make_target_handler() {
                 __info ${DOCKER_VM_IP}
                 ;;
 
+            screen)
+                screen -d -m -S docker ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty &>/dev/null
+                screen -x docker
+                screen -X -S docker quit &>/dev/null
+                return 0
+                ;;
+
+            ssh-agent|ssh)
+                ssh_forward_agent
+                ;;
+
             *)
                 __err "'${1}' target not supported..."
         esac
@@ -136,6 +148,7 @@ function make_menu_help() {
     __msg "> make clean -- kills all containers, removes dangling images"
     __msg "> make purge -- kills all containers, removes all images" 
     __msg "> make ip -- ip address of xhyve vm"
+    __msg "> make screen -- attach to docker .tty, un: root, no passwd"
 
     printf "${green}"'=%.0s'"${reset}" $(seq 1 $cols)
     printf "\n"

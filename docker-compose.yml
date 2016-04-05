@@ -8,12 +8,12 @@ services:
         environment:
             SHELL: bash
             TERM: xterm-256color
-            SSH_AUTH_SOCK: ${SSH_AUTH_SOCK}
+            SSH_AUTH_SOCK: /tmp/agent.sock
         volumes:
             - ./recipes/base/bashrc.sh:/root/.bashrc
             - ./recipes/base/insecure_key:/root/.ssh/insecure_key
             - ./recipes/base/insecure_key.pub:/root/.ssh/insecure_key.pub
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
+            - .data/ssh:/tmp
     shell:
         extends:
             service: base
@@ -28,7 +28,11 @@ services:
             dockerfile: Dockerfile
         depends_on:
             - base
-        command: ["/usr/sbin/sshd", "-D", "-d"]
+        ports:
+            - "2022:22"
+        volumes:
+            - .data/ssh:/tmp
+        command: ["daemon"]
     ssh:
         extends:
             service: base

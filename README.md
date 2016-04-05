@@ -32,3 +32,6 @@ Default output format [table]:
 make up che
 make open
 ```
+
+#### CREDITS
+[docker-ssh-agent-forward](https://github.com/avsm/docker-ssh-agent-forward)
