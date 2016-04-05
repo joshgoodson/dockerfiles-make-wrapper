@@ -8,6 +8,8 @@ else
     export DIR=$( cd "$( dirname "${(%):-%N}" )" && pwd )
 fi
 
+export DOCKER_VM_IP=`ping -q -c 1 docker.local | sed -En "s/^.*\((.+)\).*$/\1/p"`
+
 # bash colors
 bgblack="$(tput setab 0)"
 black="$(tput setaf 0)"
@@ -54,6 +56,10 @@ function make_target_handler() {
                 compose_up ${@:2}
                 ;;
             
+            bash)
+                docker exec -it ${2} bash
+                ;;
+                
             logs)
                 compose_logs ${@:2}
                 ;;
@@ -82,6 +88,10 @@ function make_target_handler() {
                 docker_remove_untagged_images
                 docker_remove_all_images
                 ;;
+            
+            ip)
+                __info ${DOCKER_VM_IP}
+                ;;
 
             *)
                 __err "'${1}' target not supported..."
@@ -103,10 +113,12 @@ function make_menu_help() {
     __msg "> make run [service] -- docker-compose run [service]"
     __msg "> make up [service] -- docker-compose up -d [service]"
     __msg "> make logs [service] -- docker-compose logs [service]"
+    __msg "> make bash [container] -- docker exec -it [container] bash"
     __msg "> make ps -- lists all running containers"
     __msg "> make images -- lists all tagged images"
     __msg "> make clean -- kills all containers, removes dangling images"
     __msg "> make purge -- kills all containers, removes all images" 
+    __msg "> make ip -- ip address of xhyve vm"
 
     printf "${green}"'=%.0s'"${reset}" $(seq 1 $cols)
     printf "\n"

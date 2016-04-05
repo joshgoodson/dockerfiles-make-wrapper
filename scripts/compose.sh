@@ -9,7 +9,7 @@ function compose_up() {
 }
 
 function compose_run() {
-    docker-compose --file ${DIR}/docker-compose.yml run $1 ${@:2}    
+    docker-compose --file ${DIR}/docker-compose.yml run --service-ports --rm $1 ${@:2}    
 }
 
 function compose_logs() {

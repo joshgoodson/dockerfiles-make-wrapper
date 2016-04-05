@@ -105,4 +105,27 @@ services:
             - /var/lib/docker/:/var/lib/docker:ro
         ports:
             - "8081:8080"
-  
+    che:
+        image: codenvy/che
+        container_name: che
+        volumes:
+           - /var/run/docker.sock:/var/run/docker.sock 
+           - ./recipes/che/che.properties:/home/user/.che/che.properties
+           - .data/che/lib:/home/user/che/lib-copy 
+           - .data/che/workspaces:/home/user/che/workspaces 
+           - .data/che/tomcat/temp/local-storage:/home/user/che/tomcat/temp/local-storage
+        ports:
+            - "8082:8080"
+        environment:
+            - CHE_DOCKER_MACHINE_HOST=${DOCKER_VM_IP}
+            - CHE_EXPORTED_PORT=8082
+        command: >
+            bash -c "
+            sudo rm -rf /home/user/che/lib-copy/* &&
+            sudo rm -rf /home/user/che/tomcat/temp/local-storage/* &&
+            mkdir -p /home/user/che/lib-copy/ &&
+            sudo chown -R user:user /home/user/che &&
+            cp -rf /home/user/che/lib/* /home/user/che/lib-copy &&
+            sudo chown -R user:staff /var/run/docker.sock && 
+            /home/user/che/bin/che.sh run -d
+            "
