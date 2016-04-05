@@ -22,7 +22,7 @@ services:
         extends:
             service: base
         image: docker.local/sshd:latest
-        container_name: docker.local.sshd
+        container_name: sshd
         build: 
             context: ./recipes/sshd
             dockerfile: Dockerfile
@@ -33,6 +33,7 @@ services:
         extends:
             service: base
         image: docker.local/ssh:latest
+        container_name: ssh
         build: 
             context: ./recipes/ssh
             dockerfile: Dockerfile
@@ -56,6 +57,7 @@ services:
         extends:
             service: aws-common
         image: docker.local/aws:latest
+        container_name: aws
         build: 
             context: ./recipes/aws
             dockerfile: Dockerfile
@@ -66,6 +68,7 @@ services:
         extends:
             service: aws-common
         image: docker.local/kinesis:latest
+        container_name: kinesis
         build:
             context: ./recipes/kinesis
             dockerfile: Dockerfile

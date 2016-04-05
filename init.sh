@@ -41,31 +41,47 @@ fi
 source scripts/docker.sh
 source scripts/compose.sh
 
+function update_current_service() {
+    echo "${1}" > .data/current_service
+}
+
 function make_target_handler() {
     if [ "$#" -gt 0 ]; then
+        if [ -n "${2}" ]; then
+            update_current_service ${2}
+        fi
+        service=${2:-`cat .data/current_service`}
+        
         case "$1" in
             help)
                 make_menu_help
                 ;;
             
             run)
-                compose_run ${@:2}
+                compose_run ${service} ${@:3}
                 ;;
             
             up)
-                compose_up ${@:2}
+                compose_up ${service}
                 ;;
             
             bash)
-                docker exec -it ${2} bash
+                docker exec -it ${service} bash
                 ;;
                 
             logs)
-                compose_logs ${@:2}
+                compose_logs ${service}
+                ;;
+            
+            open)
+                port_binding=`docker inspect -f "{{ .HostConfig.PortBindings }}" ${service} | sed -En "s/^map\[(.+)\:.+$/\1/p"`
+                port_mapping=`docker port ${service} ${port_binding}`
+                browser="Google Chrome"
+                open -a "${browser}" http://${port_mapping}
                 ;;
             
             build)
-                compose_build ${@:2}
+                compose_build ${service}
                 ;;
             
             ps)
@@ -110,9 +126,10 @@ function make_menu_help() {
     __info "TARGETS:"
     __msg "> make help -- displays this help"
     __msg "> make build [service] -- docker-compose build [service]"
-    __msg "> make run [service] -- docker-compose run [service]"
+    __msg "> make run [service] -- docker-compose run --service-ports --rm [service] [args]"
     __msg "> make up [service] -- docker-compose up -d [service]"
     __msg "> make logs [service] -- docker-compose logs [service]"
+    __msg "> make open [service] -- attempts to open Google Chrome using first port mapping"
     __msg "> make bash [container] -- docker exec -it [container] bash"
     __msg "> make ps -- lists all running containers"
     __msg "> make images -- lists all tagged images"
