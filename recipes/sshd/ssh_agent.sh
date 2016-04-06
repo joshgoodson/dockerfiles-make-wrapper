@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 finish() {
-    rm -f /tmp/agent_socket_path
+    rm -f /tmp/agent.sock
 }
 trap finish EXIT
 
