@@ -36,5 +36,14 @@ make up che
 make open
 ```
 
+### test ssh agent forwarding
+```
+make ssh
+make run shell
+root@2c3f3f648a0c:/go# ssh -T git@github.com
+...
+Hi brianclaridge! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
 #### CREDITS
 [docker-ssh-agent-forward](https://github.com/avsm/docker-ssh-agent-forward)
