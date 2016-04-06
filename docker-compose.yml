@@ -118,9 +118,9 @@ services:
         volumes:
            - /var/run/docker.sock:/var/run/docker.sock
            - /home/user/che/lib:/home/user/che/lib-copy 
-           - /home/user/che/workspaces:/home/user/che/workspaces 
            - /home/user/che/tomcat/temp/local-storage:/home/user/che/tomcat/temp/local-storage
            - ./recipes/che/che.properties:/home/user/.che/che.properties
+           - ./.data/che/workspaces:/home/user/che/workspaces
         ports:
             - "8082:8080"
         environment:
