@@ -3,6 +3,9 @@
 ## OSX Requirements
 [Docker](https://beta.docker.com/docs/) >= 1.10.3, build 20f81dd
 
+### make
+![make](/../master/make.png?raw=true "make")
+
 ### sshd ~ sample sshd daemon in a container
 ```make up sshd```
 
