@@ -69,6 +69,19 @@ function docker_rm() {
     echo -n "" 
 }
 
+function docker_remove_volumes() { 
+    __head "Removing volumes..."
+    local volumes=`docker volume ls -q`
+    if [[ -n "$volumes" ]]; then
+        while read -r id; do
+            docker volume rm ${id}
+        done <<< "$volumes"
+    else
+        __err "No volumes to remove..."
+    fi
+    echo -n "" 
+}
+
 function docker_remove_untagged_images() {
     __head "Removing untagged images..."
     local images=`docker images --quiet --filter "dangling=true"`

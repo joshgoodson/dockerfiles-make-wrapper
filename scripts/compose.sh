@@ -13,5 +13,5 @@ function compose_run() {
 }
 
 function compose_logs() {
-    docker-compose --file ${DIR}/docker-compose.yml logs $1     
+    docker-compose --file ${DIR}/docker-compose.yml logs -f $1     
 }

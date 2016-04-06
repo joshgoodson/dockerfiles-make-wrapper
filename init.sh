@@ -104,6 +104,7 @@ function make_target_handler() {
                 docker_rm
                 docker_remove_untagged_images
                 docker_remove_all_images
+                docker_remove_volumes
                 ;;
             
             ip)
